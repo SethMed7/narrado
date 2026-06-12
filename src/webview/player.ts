@@ -110,7 +110,11 @@ function dropUrl(): void {
 let ttsPromise: Promise<KokoroTTS> | null = null;
 
 function getTts(): Promise<KokoroTTS> {
-  ttsPromise ??= initTts();
+  // Reset the cache on failure so a later load retries (e.g. once back online).
+  ttsPromise ??= initTts().catch((err: unknown) => {
+    ttsPromise = null;
+    throw err;
+  });
   return ttsPromise;
 }
 
@@ -130,6 +134,10 @@ async function initTts(): Promise<KokoroTTS> {
 }
 
 // --- Generation ---
+// onnxruntime rejects concurrent run() on one session, so runs are chained;
+// a stale run exits fast via its token checks once a new load bumps runToken.
+let running: Promise<void> = Promise.resolve();
+
 async function generateAll(token: number): Promise<void> {
   generating = true;
   try {
@@ -217,6 +225,14 @@ audio.addEventListener("ended", () => {
 });
 
 playBtn.addEventListener("click", () => {
+  if (waitingForClip) {
+    // Buffering gap: nothing audible, but autoplay is armed — disarm it.
+    waitingForClip = false;
+    userPaused = true;
+    playBtn.textContent = "▶";
+    setStatus("paused");
+    return;
+  }
   if (!audio.paused) {
     audio.pause();
     userPaused = true;
@@ -280,7 +296,8 @@ window.addEventListener("message", (event: MessageEvent) => {
     setStatus("nothing to read");
     return;
   }
-  void generateAll(runToken);
+  const token = runToken;
+  running = running.then(() => generateAll(token));
 });
 
 vscode.postMessage({ type: "ready" });
