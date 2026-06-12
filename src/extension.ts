@@ -18,12 +18,26 @@ export function activate(context: vscode.ExtensionContext): void {
   if (vscode.window.activeTextEditor?.document.languageId === "markdown") {
     lastMarkdownDoc = vscode.window.activeTextEditor.document;
   }
+  // Status-bar fallback: some editors (Cursor) customize the editor title
+  // bar, so the ▶ menu icon alone isn't a reliable entry point.
+  const statusItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  statusItem.text = "$(play) Narrado";
+  statusItem.tooltip = "Read this markdown aloud";
+  statusItem.command = "narrado.read";
+  const updateStatusItem = () => {
+    const active = vscode.window.activeTextEditor?.document.languageId === "markdown";
+    if (active || (lastMarkdownDoc && !lastMarkdownDoc.isClosed)) statusItem.show();
+    else statusItem.hide();
+  };
+  updateStatusItem();
   context.subscriptions.push(
+    statusItem,
     vscode.commands.registerCommand("narrado.read", (resource?: unknown) =>
       readAloud(context, resource)
     ),
     vscode.window.onDidChangeActiveTextEditor((e) => {
       if (e?.document.languageId === "markdown") lastMarkdownDoc = e.document;
+      updateStatusItem();
     })
   );
 }

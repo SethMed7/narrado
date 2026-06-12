@@ -23,8 +23,8 @@ keys, no accounts.
 From a `.vsix` release (use the full path to the file):
 
 ```sh
-cursor --install-extension /path/to/narrado-0.2.0.vsix   # Cursor
-code --install-extension /path/to/narrado-0.2.0.vsix     # VS Code
+cursor --install-extension /path/to/narrado-0.2.1.vsix   # Cursor
+code --install-extension /path/to/narrado-0.2.1.vsix     # VS Code
 ```
 
 Then **reload the window** (Cmd+Shift+P → "Developer: Reload Window") — already-open

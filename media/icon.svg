@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <!-- Narrado: play your markdown. Full-bleed; source of truth for media/icon.png. -->
-  <rect width="256" height="256" fill="#16181d"/>
-  <path d="M72 70 L72 186 L168 128 Z" fill="#ff7a59"/>
-  <path d="M184 98 a42 42 0 0 1 0 60" stroke="#ffb86b" stroke-width="15" stroke-linecap="round" fill="none"/>
-  <path d="M208 78 a70 70 0 0 1 0 100" stroke="#ffb86b" stroke-width="15" stroke-linecap="round" fill="none" opacity="0.5"/>
+  <!-- Narrado: play your markdown. Full-bleed; source of truth for media/icon.png.
+       Dusk blue (#5681b5) from Seth's sm-portfolio tokens. -->
+  <rect width="256" height="256" fill="#161616"/>
+  <path d="M72 70 L72 186 L168 128 Z" fill="#5681b5"/>
+  <path d="M184 98 a42 42 0 0 1 0 60" stroke="#7fb0dc" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <path d="M208 78 a70 70 0 0 1 0 100" stroke="#7fb0dc" stroke-width="15" stroke-linecap="round" fill="none" opacity="0.5"/>
 </svg>
