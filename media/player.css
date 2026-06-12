@@ -2,6 +2,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
   background: var(--vscode-editor-background);
   color: var(--vscode-foreground);
   font-family: var(--vscode-font-family, sans-serif);
@@ -9,9 +10,11 @@ body {
 }
 
 #app {
-  max-width: 480px;
+  max-width: 560px;
+  height: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 24px 16px 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -99,4 +102,36 @@ body {
 #options select:focus-visible {
   outline: 1px solid var(--vscode-focusBorder);
   outline-offset: -1px;
+}
+
+#transcript {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-top: 1px solid var(--vscode-widget-border, rgba(128, 128, 128, 0.25));
+  padding-top: 8px;
+}
+
+.line {
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1.45;
+  color: var(--vscode-descriptionForeground);
+  opacity: 0.55;
+}
+
+.line.ready {
+  opacity: 1;
+  color: var(--vscode-foreground);
+}
+
+.line:hover {
+  background: var(--vscode-list-hoverBackground);
+}
+
+.line.active {
+  background: var(--vscode-list-activeSelectionBackground);
+  color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+  opacity: 1;
 }

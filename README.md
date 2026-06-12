@@ -14,16 +14,21 @@ keys, no accounts.
 - Markdown-aware narration: links read as their text, code blocks are skipped (configurable),
   tables read row by row, URLs never read aloud
 - Starts speaking after the first sentence — no waiting for the whole document to render
+- Live transcript in the player: the line being read is highlighted as it's spoken
+- Click any line in the transcript to jump playback there
 - Pause / resume, playback speed, and 25+ voices (US/British, male/female)
 
 ## Install
 
-From a `.vsix` release:
+From a `.vsix` release (use the full path to the file):
 
 ```sh
-cursor --install-extension narrado-0.1.2.vsix   # Cursor
-code --install-extension narrado-0.1.2.vsix     # VS Code
+cursor --install-extension /path/to/narrado-0.2.0.vsix   # Cursor
+code --install-extension /path/to/narrado-0.2.0.vsix     # VS Code
 ```
+
+Then **reload the window** (Cmd+Shift+P → "Developer: Reload Window") — already-open
+windows don't pick up newly installed extensions until reloaded.
 
 Marketplace / Open VSX: soon.
 

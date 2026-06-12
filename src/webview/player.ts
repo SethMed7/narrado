@@ -59,12 +59,13 @@ const speedSel = document.createElement("select");
 for (const s of SPEEDS) speedSel.add(new Option(`${s}×`, s, false, s === "1"));
 const voiceSel = document.createElement("select");
 for (const [id, label] of VOICES) voiceSel.add(new Option(label, id));
+const transcriptEl = el("div", "transcript");
 
 const controls = el("div", "controls");
 controls.append(playBtn, stopBtn, progressEl);
 const options = el("div", "options");
 options.append(speedSel, voiceSel);
-app.append(titleEl, statusEl, controls, options);
+app.append(titleEl, statusEl, controls, options, transcriptEl);
 
 function el(tag: string, id: string): HTMLElement {
   const node = document.createElement(tag);
@@ -75,13 +76,15 @@ function el(tag: string, id: string): HTMLElement {
 // --- State ---
 let runToken = 0;
 let segments: string[] = [];
-let clips: Blob[] = []; // kept after playback so Stop can restart from the top
+let clips: Array<Blob | undefined> = []; // sparse, indexed by segment; kept so Stop restarts from the top
+let genCount = 0;
 let playIndex = 0;
 let userPaused = false;
-let waitingForClip = false; // playback caught up with generation
+let waitingForClip = false; // playback (or a seek) is ahead of generation
 let generating = false;
 let currentVoice: Voice = "af_heart";
 let currentUrl: string | null = null;
+let lineEls: HTMLElement[] = [];
 
 const audio = new Audio();
 audio.preservesPitch = true;
@@ -90,8 +93,14 @@ function setStatus(text: string): void {
   statusEl.textContent = text;
 }
 
+function genStatus(): string {
+  return `generating ${genCount}/${segments.length}`;
+}
+
 function updateProgress(): void {
-  progressEl.textContent = `${Math.min(playIndex + 1, clips.length)} / ${segments.length}`;
+  progressEl.textContent = segments.length
+    ? `${Math.min(playIndex + 1, segments.length)} / ${segments.length}`
+    : "0 / 0";
 }
 
 function fail(message: string): void {
@@ -103,6 +112,33 @@ function dropUrl(): void {
   if (currentUrl) {
     URL.revokeObjectURL(currentUrl);
     currentUrl = null;
+  }
+}
+
+// --- Transcript ---
+function buildTranscript(): void {
+  transcriptEl.replaceChildren();
+  lineEls = segments.map((text, i) => {
+    const line = document.createElement("div");
+    line.className = "line";
+    line.textContent = text;
+    line.title = "Jump here";
+    line.addEventListener("click", () => seekTo(i));
+    transcriptEl.append(line);
+    return line;
+  });
+}
+
+function markReady(i: number): void {
+  lineEls[i]?.classList.add("ready");
+}
+
+function setActiveLine(i: number): void {
+  transcriptEl.querySelector(".active")?.classList.remove("active");
+  const line = lineEls[i];
+  if (line) {
+    line.classList.add("active");
+    line.scrollIntoView({ block: "nearest" });
   }
 }
 
@@ -134,6 +170,15 @@ async function initTts(): Promise<KokoroTTS> {
 }
 
 // --- Generation ---
+// Always work on the first missing clip at-or-after the playhead (wrapping to
+// fill the rest), so a click-to-jump gets its audio next instead of waiting
+// for everything before it.
+function nextToGenerate(): number {
+  for (let i = playIndex; i < segments.length; i++) if (!clips[i]) return i;
+  for (let i = 0; i < playIndex; i++) if (!clips[i]) return i;
+  return -1;
+}
+
 // onnxruntime rejects concurrent run() on one session, so runs are chained;
 // a stale run exits fast via its token checks once a new load bumps runToken.
 let running: Promise<void> = Promise.resolve();
@@ -142,14 +187,18 @@ async function generateAll(token: number): Promise<void> {
   generating = true;
   try {
     const tts = await getTts();
-    for (let i = 0; i < segments.length; i++) {
+    for (;;) {
       if (token !== runToken) return;
-      setStatus(`generating ${i + 1}/${segments.length}`);
+      const i = nextToGenerate();
+      if (i === -1) break;
+      setStatus(genStatus());
       const out = await tts.generate(segments[i], { voice: currentVoice });
       if (token !== runToken) return;
-      clips.push(toWav(out.audio, out.sampling_rate));
+      clips[i] = toWav(out.audio, out.sampling_rate);
+      genCount++;
+      markReady(i);
       updateProgress();
-      if ((clips.length === 1 && !userPaused) || waitingForClip) {
+      if (!userPaused && audio.paused && clips[playIndex] && (waitingForClip || genCount === 1)) {
         waitingForClip = false;
         playCurrent();
       }
@@ -203,24 +252,47 @@ function playCurrent(): void {
   audio.playbackRate = Number(speedSel.value);
   void audio.play().catch((err: unknown) => fail(err instanceof Error ? err.message : String(err)));
   playBtn.textContent = "❚❚";
-  setStatus(generating ? `generating ${clips.length}/${segments.length}` : "playing");
+  setActiveLine(playIndex);
+  setStatus(generating ? genStatus() : "playing");
   updateProgress();
+}
+
+function seekTo(i: number): void {
+  playIndex = i;
+  userPaused = false;
+  setActiveLine(i);
+  updateProgress();
+  if (clips[i]) {
+    waitingForClip = false;
+    playCurrent();
+  } else {
+    // Generation loop will pick this index next (nextToGenerate starts at the playhead).
+    audio.pause();
+    dropUrl();
+    audio.removeAttribute("src");
+    waitingForClip = true;
+    playBtn.textContent = "❚❚";
+    setStatus(genStatus());
+  }
 }
 
 audio.addEventListener("ended", () => {
   dropUrl();
   playIndex++;
-  if (playIndex < clips.length) {
-    playCurrent();
-  } else if (generating) {
-    waitingForClip = true;
-    setStatus(`generating ${clips.length}/${segments.length}`);
-  } else {
+  if (playIndex >= segments.length) {
     playIndex = 0;
     playBtn.textContent = "▶";
     userPaused = true;
     setStatus("done");
+    setActiveLine(0);
     updateProgress();
+    return;
+  }
+  if (clips[playIndex]) {
+    playCurrent();
+  } else {
+    waitingForClip = true;
+    setStatus(genStatus());
   }
 });
 
@@ -243,7 +315,7 @@ playBtn.addEventListener("click", () => {
     if (currentUrl) {
       void audio.play();
       playBtn.textContent = "❚❚";
-      setStatus(generating ? `generating ${clips.length}/${segments.length}` : "playing");
+      setStatus(generating ? genStatus() : "playing");
     } else {
       playCurrent();
     }
@@ -259,6 +331,7 @@ stopBtn.addEventListener("click", () => {
   userPaused = true;
   playBtn.textContent = "▶";
   setStatus("stopped");
+  setActiveLine(0);
   updateProgress();
 });
 
@@ -280,7 +353,8 @@ window.addEventListener("message", (event: MessageEvent) => {
   dropUrl();
   audio.removeAttribute("src");
   segments = msg.segments ?? [];
-  clips = [];
+  clips = new Array<Blob | undefined>(segments.length);
+  genCount = 0;
   playIndex = 0;
   userPaused = false;
   waitingForClip = false;
@@ -291,11 +365,13 @@ window.addEventListener("message", (event: MessageEvent) => {
     currentVoice = msg.voice as Voice;
   }
   playBtn.textContent = "▶";
+  buildTranscript();
   updateProgress();
   if (segments.length === 0) {
     setStatus("nothing to read");
     return;
   }
+  setActiveLine(0);
   const token = runToken;
   running = running.then(() => generateAll(token));
 });
