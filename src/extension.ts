@@ -24,12 +24,7 @@ export function activate(context: vscode.ExtensionContext): void {
   statusItem.text = "$(play) Narrado";
   statusItem.tooltip = "Read this markdown aloud";
   statusItem.command = "narrado.read";
-  const updateStatusItem = () => {
-    const active = vscode.window.activeTextEditor?.document.languageId === "markdown";
-    if (active || (lastMarkdownDoc && !lastMarkdownDoc.isClosed)) statusItem.show();
-    else statusItem.hide();
-  };
-  updateStatusItem();
+  statusItem.show();
   context.subscriptions.push(
     statusItem,
     vscode.commands.registerCommand("narrado.read", (resource?: unknown) =>
@@ -37,7 +32,6 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.window.onDidChangeActiveTextEditor((e) => {
       if (e?.document.languageId === "markdown") lastMarkdownDoc = e.document;
-      updateStatusItem();
     })
   );
 }
@@ -75,18 +69,23 @@ async function readAloud(context: vscode.ExtensionContext, resource?: unknown): 
   }
 }
 
-// The play button also lives on the rendered markdown preview, where there is
-// no active text editor — resolve the document from (in order): the resource
-// uri the title-bar menu passes, the active/visible editors, the last
-// markdown editor that was focused, or the only open markdown document.
+// Rendered markdown previews (including custom preview editors) have no
+// active text editor, so resolve the document from, in order: the resource
+// uri the title-bar menu passes, the active/visible editors, the active tab's
+// backing file, the last focused markdown editor, any markdown tab, or the
+// only open markdown document.
 async function findMarkdownDoc(resource?: unknown): Promise<vscode.TextDocument | undefined> {
-  if (resource instanceof vscode.Uri) {
+  const fromUri = async (uri: vscode.Uri): Promise<vscode.TextDocument | undefined> => {
     try {
-      const doc = await vscode.workspace.openTextDocument(resource);
-      if (doc.languageId === "markdown") return doc;
+      const doc = await vscode.workspace.openTextDocument(uri);
+      return doc.languageId === "markdown" ? doc : undefined;
     } catch {
-      // fall through to the editor-based lookups
+      return undefined;
     }
+  };
+  if (resource instanceof vscode.Uri) {
+    const doc = await fromUri(resource);
+    if (doc) return doc;
   }
   const active = vscode.window.activeTextEditor;
   if (active?.document.languageId === "markdown") return active.document;
@@ -94,11 +93,34 @@ async function findMarkdownDoc(resource?: unknown): Promise<vscode.TextDocument 
     (e) => e.document.languageId === "markdown"
   );
   if (visible) return visible.document;
+  const activeTabUri = markdownTabUri(vscode.window.tabGroups.activeTabGroup.activeTab);
+  if (activeTabUri) {
+    const doc = await fromUri(activeTabUri);
+    if (doc) return doc;
+  }
   if (lastMarkdownDoc && !lastMarkdownDoc.isClosed) return lastMarkdownDoc;
+  for (const group of vscode.window.tabGroups.all) {
+    for (const tab of group.tabs) {
+      const uri = markdownTabUri(tab);
+      if (uri) {
+        const doc = await fromUri(uri);
+        if (doc) return doc;
+      }
+    }
+  }
   const open = vscode.workspace.textDocuments.filter(
     (d) => d.languageId === "markdown" && !d.isClosed
   );
   return open.length === 1 ? open[0] : undefined;
+}
+
+function markdownTabUri(tab: vscode.Tab | undefined): vscode.Uri | undefined {
+  const input = tab?.input;
+  if (input && typeof input === "object" && "uri" in input) {
+    const uri = (input as { uri: unknown }).uri;
+    if (uri instanceof vscode.Uri && /\.(md|markdown)$/i.test(uri.path)) return uri;
+  }
+  return undefined;
 }
 
 function createPanel(context: vscode.ExtensionContext): vscode.WebviewPanel {
