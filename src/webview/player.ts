@@ -83,6 +83,7 @@ let userPaused = false;
 let waitingForClip = false; // playback (or a seek) is ahead of generation
 let generating = false;
 let currentVoice: Voice = "af_heart";
+let voiceEpoch = 0; // bumped on voice change so in-flight generations get discarded
 let currentUrl: string | null = null;
 let lineEls: HTMLElement[] = [];
 
@@ -192,8 +193,10 @@ async function generateAll(token: number): Promise<void> {
       const i = nextToGenerate();
       if (i === -1) break;
       setStatus(genStatus());
+      const epoch = voiceEpoch;
       const out = await tts.generate(segments[i], { voice: currentVoice });
       if (token !== runToken) return;
+      if (epoch !== voiceEpoch) continue; // voice changed mid-render — redo this segment
       clips[i] = toWav(out.audio, out.sampling_rate);
       genCount++;
       markReady(i);
@@ -339,9 +342,27 @@ speedSel.addEventListener("change", () => {
   audio.playbackRate = Number(speedSel.value);
 });
 
-// Applies only to segments not yet generated; already-queued clips keep their voice.
+// Re-render everything except the clip that is audibly playing right now;
+// the new voice takes over from the next line onward (and on any replay).
 voiceSel.addEventListener("change", () => {
   currentVoice = voiceSel.value as Voice;
+  voiceEpoch++;
+  const playing = !audio.paused ? playIndex : -1;
+  genCount = 0;
+  for (let i = 0; i < segments.length; i++) {
+    if (i === playing) {
+      genCount++;
+      continue;
+    }
+    if (clips[i]) {
+      clips[i] = undefined;
+      lineEls[i]?.classList.remove("ready");
+    }
+  }
+  if (segments.length && !generating) {
+    const token = runToken;
+    running = running.then(() => generateAll(token));
+  }
 });
 
 // --- Host messages ---

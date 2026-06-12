@@ -41,7 +41,9 @@ export function deactivate(): void {}
 async function readAloud(context: vscode.ExtensionContext, resource?: unknown): Promise<void> {
   const doc = await findMarkdownDoc(resource);
   if (!doc) {
-    vscode.window.showWarningMessage("Narrado: open a markdown file first.");
+    vscode.window.showWarningMessage(
+      "Narrado: couldn't find the markdown document — focus its editor tab and try again."
+    );
     return;
   }
 
@@ -93,10 +95,20 @@ async function findMarkdownDoc(resource?: unknown): Promise<vscode.TextDocument 
     (e) => e.document.languageId === "markdown"
   );
   if (visible) return visible.document;
-  const activeTabUri = markdownTabUri(vscode.window.tabGroups.activeTabGroup.activeTab);
+  const activeTab = vscode.window.tabGroups.activeTabGroup.activeTab;
+  const activeTabUri = markdownTabUri(activeTab);
   if (activeTabUri) {
     const doc = await fromUri(activeTabUri);
     if (doc) return doc;
+  }
+  // Some preview tabs (Cursor's) expose no input uri at all — fall back to
+  // finding the tab's filename in the workspace when it's unambiguous.
+  if (activeTab?.label && /\.(md|markdown)$/i.test(activeTab.label)) {
+    const matches = await vscode.workspace.findFiles(`**/${activeTab.label}`, "**/node_modules/**", 2);
+    if (matches.length === 1) {
+      const doc = await fromUri(matches[0]);
+      if (doc) return doc;
+    }
   }
   if (lastMarkdownDoc && !lastMarkdownDoc.isClosed) return lastMarkdownDoc;
   for (const group of vscode.window.tabGroups.all) {
