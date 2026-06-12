@@ -2,7 +2,8 @@
   "name": "narrado",
   "displayName": "Narrado",
   "description": "Press play on your markdown. On-device text-to-speech for VS Code and Cursor — no cloud, no API keys.",
-  "version": "0.1.1",
+  "version": "0.1.2",
+  "icon": "media/icon.png",
   "publisher": "sethmed7",
   "license": "MIT",
   "engines": {

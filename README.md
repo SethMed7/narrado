@@ -21,8 +21,8 @@ keys, no accounts.
 From a `.vsix` release:
 
 ```sh
-cursor --install-extension narrado-0.1.1.vsix   # Cursor
-code --install-extension narrado-0.1.1.vsix     # VS Code
+cursor --install-extension narrado-0.1.2.vsix   # Cursor
+code --install-extension narrado-0.1.2.vsix     # VS Code
 ```
 
 Marketplace / Open VSX: soon.

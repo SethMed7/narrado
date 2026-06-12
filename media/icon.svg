@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Narrado: play your markdown. Source of truth for media/icon.png. -->
+  <rect width="256" height="256" rx="56" fill="#16181d"/>
+  <path d="M76 78 L76 178 L160 128 Z" fill="#ff7a59"/>
+  <path d="M176 102 a38 38 0 0 1 0 52" stroke="#ffb86b" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <path d="M198 84 a62 62 0 0 1 0 88" stroke="#ffb86b" stroke-width="13" stroke-linecap="round" fill="none" opacity="0.5"/>
+</svg>
