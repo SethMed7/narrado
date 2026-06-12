@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  .banner {
+    width: 1600px; height: 400px; background: #161616;
+    position: relative; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(900px 460px at 22% 45%, rgba(86, 129, 181, 0.16), transparent 65%);
+  }
+  .mark { position: absolute; left: 100px; top: 50%; transform: translateY(-50%); }
+  .text { position: absolute; left: 318px; top: 50%; transform: translateY(-52%); }
+  h1 { margin: 0; font-size: 108px; font-weight: 700; letter-spacing: -0.035em; color: #edf1f6; }
+  p {
+    margin: 12px 0 0 4px;
+    font: 500 27px/1 ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+    color: #7fb0dc;
+  }
+  .wave {
+    position: absolute; right: 0; top: 0; height: 100%;
+    display: flex; align-items: center; gap: 16px; padding-right: 96px;
+  }
+  .bar { width: 11px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<div class="banner">
+  <div class="glow"></div>
+  <div class="mark">
+    <svg width="180" height="180" viewBox="0 0 256 256">
+      <path d="M64 72 L64 184 L162 128 Z" fill="#5681b5" stroke="#5681b5" stroke-width="20" stroke-linejoin="round"/>
+      <path d="M192 96 a44 44 0 0 1 0 64" stroke="#7fb0dc" stroke-width="16" stroke-linecap="round" fill="none"/>
+      <path d="M218 74 a76 76 0 0 1 0 108" stroke="#7fb0dc" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.45"/>
+    </svg>
+  </div>
+  <div class="text">
+    <h1>narrado</h1>
+    <p>press play on your markdown.</p>
+  </div>
+  <div class="wave" id="wave"></div>
+  <script>
+    const heights = [38, 86, 140, 196, 152, 104, 170, 220, 178, 122, 76, 110, 64, 40];
+    const wave = document.getElementById("wave");
+    heights.forEach((h, i) => {
+      const b = document.createElement("div");
+      b.className = "bar";
+      b.style.height = h + "px";
+      b.style.background = i % 2 ? "#7fb0dc" : "#5681b5";
+      b.style.opacity = Math.max(0.10, 0.95 - i * 0.062).toFixed(2);
+      wave.append(b);
+    });
+  </script>
+</div>
+</body>
+</html>

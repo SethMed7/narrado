@@ -2,10 +2,18 @@
   "name": "narrado",
   "displayName": "Narrado",
   "description": "Press play on your markdown. On-device text-to-speech for VS Code and Cursor — no cloud, no API keys.",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "icon": "media/icon.png",
   "publisher": "sethmed7",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SethMed7/narrado.git"
+  },
+  "homepage": "https://github.com/SethMed7/narrado#readme",
+  "bugs": {
+    "url": "https://github.com/SethMed7/narrado/issues"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -95,7 +103,7 @@
   "scripts": {
     "build": "bun run build:ext && bun run build:webview",
     "build:ext": "bun build src/extension.ts --target=node --format=cjs --external=vscode --outfile=dist/extension.js",
-    "build:webview": "bun build src/webview/player.ts --target=browser --outfile=dist/player.js",
+    "build:webview": "bun build src/webview/player.ts --target=browser --outfile=dist/player.js && sed -i '' 's|\"[^\"]*/node_modules/|\"/node_modules/|g' dist/player.js",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "package": "bun run build && vsce package --no-dependencies --allow-missing-repository"

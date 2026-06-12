@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  /* Mirror of the VS Code dark-modern theme variables the real player consumes,
+     with narrado's dusk blue as the action color. The player markup/styles below
+     match src/webview/player.ts + media/player.css. */
+  :root {
+    --vscode-editor-background: #1f1f1f;
+    --vscode-foreground: #cccccc;
+    --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --vscode-font-size: 13px;
+    --vscode-descriptionForeground: #9d9d9d;
+    --vscode-button-background: #5681b5;
+    --vscode-button-foreground: #ffffff;
+    --vscode-button-hoverBackground: #6890c2;
+    --vscode-button-secondaryBackground: #3a3d41;
+    --vscode-button-secondaryForeground: #cccccc;
+    --vscode-dropdown-background: #313131;
+    --vscode-dropdown-foreground: #cccccc;
+    --vscode-dropdown-border: #3c3c3c;
+    --vscode-widget-border: #3c3c3c;
+    --vscode-list-hoverBackground: #2a2d2e;
+    --vscode-list-activeSelectionBackground: rgba(86, 129, 181, 0.32);
+    --vscode-list-activeSelectionForeground: #ffffff;
+    --vscode-focusBorder: #5681b5;
+  }
+  html, body { margin: 0; padding: 0; background: #161616; }
+  .stage { width: 960px; padding: 36px; box-sizing: border-box; }
+  .window {
+    border: 1px solid #2e2e2e; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    background: var(--vscode-editor-background);
+  }
+  .chrome { display: flex; gap: 8px; padding: 13px 16px; background: #242424; border-bottom: 1px solid #2e2e2e; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  /* === media/player.css === */
+  .body-clone {
+    background: var(--vscode-editor-background); color: var(--vscode-foreground);
+    font-family: var(--vscode-font-family); font-size: var(--vscode-font-size);
+  }
+  #app {
+    max-width: 560px; height: 560px; box-sizing: border-box; margin: 0 auto;
+    padding: 24px 16px 12px; display: flex; flex-direction: column; gap: 12px;
+  }
+  #title { margin: 0; font-size: 1.3em; font-weight: 600; overflow-wrap: anywhere; }
+  #status { min-height: 1.4em; color: var(--vscode-descriptionForeground); font-variant-numeric: tabular-nums; }
+  #controls { display: flex; align-items: center; gap: 12px; }
+  #controls button {
+    border: none; border-radius: 50%; cursor: pointer;
+    background: var(--vscode-button-background); color: var(--vscode-button-foreground);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  #play { width: 56px; height: 56px; font-size: 22px; }
+  #stop {
+    width: 36px; height: 36px; font-size: 14px;
+    background: var(--vscode-button-secondaryBackground); color: var(--vscode-button-secondaryForeground);
+  }
+  #progress { margin-left: auto; color: var(--vscode-descriptionForeground); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  #options { display: flex; gap: 8px; }
+  #options select {
+    flex: 1; min-width: 0; padding: 4px 6px;
+    background: var(--vscode-dropdown-background); color: var(--vscode-dropdown-foreground);
+    border: 1px solid var(--vscode-dropdown-border); border-radius: 2px;
+  }
+  #transcript { flex: 1; min-height: 0; overflow-y: hidden; border-top: 1px solid var(--vscode-widget-border); padding-top: 8px; }
+  .line { padding: 4px 8px; border-radius: 4px; cursor: pointer; line-height: 1.45; color: var(--vscode-descriptionForeground); opacity: 0.55; }
+  .line.ready { opacity: 1; color: var(--vscode-foreground); }
+  .line.active { background: var(--vscode-list-activeSelectionBackground); color: var(--vscode-list-activeSelectionForeground); opacity: 1; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="window">
+    <div class="chrome">
+      <div class="dot" style="background:#ff5f57"></div>
+      <div class="dot" style="background:#febc2e"></div>
+      <div class="dot" style="background:#28c840"></div>
+    </div>
+    <div class="body-clone">
+      <div id="app">
+        <h1 id="title">README.md</h1>
+        <div id="status">playing</div>
+        <div id="controls">
+          <button id="play">❚❚</button>
+          <button id="stop">■</button>
+          <span id="progress">4 / 14</span>
+        </div>
+        <div id="options">
+          <select><option>1×</option></select>
+          <select><option>Heart (US female)</option></select>
+        </div>
+        <div id="transcript">
+          <div class="line ready">narrado.</div>
+          <div class="line ready">Press play on your markdown.</div>
+          <div class="line ready">Narrado adds a play button to every markdown editor in VS Code and Cursor.</div>
+          <div class="line ready active">The document is read aloud with a natural neural voice, generated entirely on your machine.</div>
+          <div class="line ready">No cloud, no API keys, no accounts.</div>
+          <div class="line ready">Features.</div>
+          <div class="line ready">Play button in the editor title bar of any markdown file.</div>
+          <div class="line ready">On-device text to speech, free and private.</div>
+          <div class="line">Live transcript: the line being read is highlighted as it is spoken.</div>
+          <div class="line">Click any line in the transcript to jump playback there.</div>
+          <div class="line">Starts speaking after the first sentence, no waiting for the whole document.</div>
+          <div class="line">Pause, resume, playback speed, and 25 plus voices.</div>
+          <div class="line">Install.</div>
+          <div class="line">Download the latest release and install from VSIX.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
