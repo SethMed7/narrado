@@ -20,7 +20,11 @@ keys, no accounts.
 
 ## Install
 
-From a `.vsix` release (use the full path to the file):
+Download the latest `.vsix` from
+[Releases](https://github.com/SethMed7/narrado/releases/latest), then either:
+
+- **In the editor**: Extensions panel → `…` menu → **Install from VSIX…** → pick the file, or
+- **Terminal** (use the full path to the file):
 
 ```sh
 cursor --install-extension /path/to/narrado-0.2.4.vsix   # Cursor
