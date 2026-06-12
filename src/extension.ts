@@ -12,18 +12,27 @@ type LoadMessage = {
 let panel: vscode.WebviewPanel | undefined;
 let webviewReady = false;
 let pendingLoad: LoadMessage | undefined;
+let lastMarkdownDoc: vscode.TextDocument | undefined;
 
 export function activate(context: vscode.ExtensionContext): void {
+  if (vscode.window.activeTextEditor?.document.languageId === "markdown") {
+    lastMarkdownDoc = vscode.window.activeTextEditor.document;
+  }
   context.subscriptions.push(
-    vscode.commands.registerCommand("narrado.read", () => readAloud(context))
+    vscode.commands.registerCommand("narrado.read", (resource?: unknown) =>
+      readAloud(context, resource)
+    ),
+    vscode.window.onDidChangeActiveTextEditor((e) => {
+      if (e?.document.languageId === "markdown") lastMarkdownDoc = e.document;
+    })
   );
 }
 
 export function deactivate(): void {}
 
-function readAloud(context: vscode.ExtensionContext): void {
-  const editor = findMarkdownEditor();
-  if (!editor) {
+async function readAloud(context: vscode.ExtensionContext, resource?: unknown): Promise<void> {
+  const doc = await findMarkdownDoc(resource);
+  if (!doc) {
     vscode.window.showWarningMessage("Narrado: open a markdown file first.");
     return;
   }
@@ -32,7 +41,6 @@ function readAloud(context: vscode.ExtensionContext): void {
   const voice = config.get<string>("voice", "af_heart");
   const readCodeBlocks = config.get<boolean>("readCodeBlocks", false);
 
-  const doc = editor.document;
   const segments = toSpeakable(doc.getText(), { readCodeBlocks });
   if (segments.length === 0) {
     vscode.window.showInformationMessage("Narrado: nothing to read in this document.");
@@ -53,12 +61,30 @@ function readAloud(context: vscode.ExtensionContext): void {
   }
 }
 
-function findMarkdownEditor(): vscode.TextEditor | undefined {
+// The play button also lives on the rendered markdown preview, where there is
+// no active text editor — resolve the document from (in order): the resource
+// uri the title-bar menu passes, the active/visible editors, the last
+// markdown editor that was focused, or the only open markdown document.
+async function findMarkdownDoc(resource?: unknown): Promise<vscode.TextDocument | undefined> {
+  if (resource instanceof vscode.Uri) {
+    try {
+      const doc = await vscode.workspace.openTextDocument(resource);
+      if (doc.languageId === "markdown") return doc;
+    } catch {
+      // fall through to the editor-based lookups
+    }
+  }
   const active = vscode.window.activeTextEditor;
-  if (active?.document.languageId === "markdown") return active;
-  return vscode.window.visibleTextEditors.find(
+  if (active?.document.languageId === "markdown") return active.document;
+  const visible = vscode.window.visibleTextEditors.find(
     (e) => e.document.languageId === "markdown"
   );
+  if (visible) return visible.document;
+  if (lastMarkdownDoc && !lastMarkdownDoc.isClosed) return lastMarkdownDoc;
+  const open = vscode.workspace.textDocuments.filter(
+    (d) => d.languageId === "markdown" && !d.isClosed
+  );
+  return open.length === 1 ? open[0] : undefined;
 }
 
 function createPanel(context: vscode.ExtensionContext): vscode.WebviewPanel {
