@@ -1,0 +1,109 @@
+{
+  "name": "narrado",
+  "displayName": "Narrado",
+  "description": "Press play on your markdown. On-device text-to-speech for VS Code and Cursor — no cloud, no API keys.",
+  "version": "0.1.0",
+  "publisher": "sethmed7",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "tts",
+    "text-to-speech",
+    "read aloud",
+    "kokoro"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "narrado.read",
+        "title": "Narrado: Read Aloud",
+        "icon": "$(play)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "narrado.read",
+          "when": "resourceLangId == markdown",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Narrado",
+      "properties": {
+        "narrado.voice": {
+          "type": "string",
+          "default": "af_heart",
+          "enum": [
+            "af_heart",
+            "af_alloy",
+            "af_aoede",
+            "af_bella",
+            "af_jessica",
+            "af_kore",
+            "af_nicole",
+            "af_nova",
+            "af_river",
+            "af_sarah",
+            "af_sky",
+            "am_adam",
+            "am_echo",
+            "am_eric",
+            "am_fenrir",
+            "am_liam",
+            "am_michael",
+            "am_onyx",
+            "am_puck",
+            "am_santa",
+            "bf_alice",
+            "bf_emma",
+            "bf_isabella",
+            "bf_lily",
+            "bm_daniel",
+            "bm_fable",
+            "bm_george",
+            "bm_lewis"
+          ],
+          "description": "Default Kokoro voice (af = US female, am = US male, bf = British female, bm = British male)."
+        },
+        "narrado.readCodeBlocks": {
+          "type": "boolean",
+          "default": false,
+          "description": "Read code blocks aloud instead of skipping them."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "bun run build:ext && bun run build:webview",
+    "build:ext": "bun build src/extension.ts --target=node --format=cjs --external=vscode --outfile=dist/extension.js",
+    "build:webview": "bun build src/webview/player.ts --target=browser --outfile=dist/player.js",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "package": "bun run build && vsce package --no-dependencies --allow-missing-repository"
+  },
+  "dependencies": {
+    "kokoro-js": "^1.2.0",
+    "mdast-util-to-string": "^4.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.0",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.0.0",
+    "@types/mdast": "^4.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.4.0"
+  }
+}
