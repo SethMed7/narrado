@@ -3,37 +3,38 @@
 <head>
 <meta charset="utf-8" />
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
   /* Mirror of the VS Code dark-modern theme variables the real player consumes,
-     with narrado's dusk blue as the action color. The player markup/styles below
-     match src/webview/player.ts + media/player.css. */
+     with narrado's electric blue #5B8CFF as the action color. The player markup/styles
+     below match src/webview/player.ts + media/player.css. */
   :root {
-    --vscode-editor-background: #1f1f1f;
-    --vscode-foreground: #cccccc;
+    --vscode-editor-background: #0F1117;
+    --vscode-foreground: #E7ECF3;
     --vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --vscode-font-size: 13px;
-    --vscode-descriptionForeground: #9d9d9d;
-    --vscode-button-background: #5681b5;
-    --vscode-button-foreground: #ffffff;
-    --vscode-button-hoverBackground: #6890c2;
-    --vscode-button-secondaryBackground: #3a3d41;
-    --vscode-button-secondaryForeground: #cccccc;
-    --vscode-dropdown-background: #313131;
-    --vscode-dropdown-foreground: #cccccc;
-    --vscode-dropdown-border: #3c3c3c;
-    --vscode-widget-border: #3c3c3c;
-    --vscode-list-hoverBackground: #2a2d2e;
-    --vscode-list-activeSelectionBackground: rgba(86, 129, 181, 0.32);
-    --vscode-list-activeSelectionForeground: #ffffff;
-    --vscode-focusBorder: #5681b5;
+    --vscode-descriptionForeground: #7A8597;
+    --vscode-button-background: #5B8CFF;
+    --vscode-button-foreground: #0B0C10;
+    --vscode-button-hoverBackground: #6E9BFF;
+    --vscode-button-secondaryBackground: #1C1F28;
+    --vscode-button-secondaryForeground: #E7ECF3;
+    --vscode-dropdown-background: #14161E;
+    --vscode-dropdown-foreground: #E7ECF3;
+    --vscode-dropdown-border: #1C1F28;
+    --vscode-widget-border: #1C1F28;
+    --vscode-list-hoverBackground: #161922;
+    --vscode-list-activeSelectionBackground: rgba(91, 140, 255, 0.18);
+    --vscode-list-activeSelectionForeground: #E7ECF3;
+    --vscode-focusBorder: #5B8CFF;
   }
-  html, body { margin: 0; padding: 0; background: #161616; }
+  html, body { margin: 0; padding: 0; background: #0B0C10; }
   .stage { width: 960px; padding: 36px; box-sizing: border-box; }
   .window {
-    border: 1px solid #2e2e2e; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid #1C1F28; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
     background: var(--vscode-editor-background);
   }
-  .chrome { display: flex; gap: 8px; padding: 13px 16px; background: #242424; border-bottom: 1px solid #2e2e2e; }
+  .chrome { display: flex; gap: 8px; padding: 13px 16px; background: #14161E; border-bottom: 1px solid #1C1F28; }
   .dot { width: 12px; height: 12px; border-radius: 50%; }
 
   /* === media/player.css === */
@@ -45,7 +46,8 @@
     max-width: 560px; height: 560px; box-sizing: border-box; margin: 0 auto;
     padding: 24px 16px 12px; display: flex; flex-direction: column; gap: 12px;
   }
-  #title { margin: 0; font-size: 1.3em; font-weight: 600; overflow-wrap: anywhere; }
+  #title { margin: 0; font-size: 1.3em; font-weight: 700; overflow-wrap: anywhere;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -0.01em; }
   #status { min-height: 1.4em; color: var(--vscode-descriptionForeground); font-variant-numeric: tabular-nums; }
   #controls { display: flex; align-items: center; gap: 12px; }
   #controls button {
@@ -66,9 +68,17 @@
     border: 1px solid var(--vscode-dropdown-border); border-radius: 2px;
   }
   #transcript { flex: 1; min-height: 0; overflow-y: hidden; border-top: 1px solid var(--vscode-widget-border); padding-top: 8px; }
-  .line { padding: 4px 8px; border-radius: 4px; cursor: pointer; line-height: 1.45; color: var(--vscode-descriptionForeground); opacity: 0.55; }
+  .line {
+    padding: 4px 8px; border-radius: 4px; cursor: pointer; line-height: 1.5;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.96em;
+    color: var(--vscode-descriptionForeground); opacity: 0.55;
+  }
   .line.ready { opacity: 1; color: var(--vscode-foreground); }
-  .line.active { background: var(--vscode-list-activeSelectionBackground); color: var(--vscode-list-activeSelectionForeground); opacity: 1; }
+  .line.active {
+    background: var(--vscode-list-activeSelectionBackground);
+    color: var(--vscode-list-activeSelectionForeground); opacity: 1;
+    box-shadow: inset 2px 0 0 #5B8CFF;
+  }
 </style>
 </head>
 <body>

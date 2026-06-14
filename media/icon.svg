@@ -1,8 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <!-- Narrado: play your markdown. Full-bleed; source of truth for media/icon.png.
-       Brand: dusk blue #5681b5 / #7fb0dc on #161616; soft joins for a premium read. -->
-  <rect width="256" height="256" fill="#161616"/>
-  <path d="M82 82 L82 174 L160 128 Z" fill="#5681b5" stroke="#5681b5" stroke-width="18" stroke-linejoin="round"/>
-  <path d="M186 100 a40 40 0 0 1 0 56" stroke="#7fb0dc" stroke-width="14" stroke-linecap="round" fill="none"/>
-  <path d="M209 81 a67 67 0 0 1 0 94" stroke="#7fb0dc" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.45"/>
+  <!-- Narrado: press play on your markdown. Full-bleed; source of truth for media/icon.png.
+       Brand: electric blue #5B8CFF (depth #3D6BE0) on near-black #0B0C10. JetBrains Mono,
+       terminal/editorial. A play triangle with a blinking-cursor underscore — a quiet,
+       precise reading instrument. No sound arcs (those belong to the sibling, leelo). -->
+  <rect width="256" height="256" fill="#0B0C10"/>
+  <path d="M92 70 L92 162 L168 116 Z" fill="#5B8CFF" stroke="#5B8CFF" stroke-width="18" stroke-linejoin="round"/>
+  <rect x="92" y="186" width="76" height="14" rx="3" fill="#5B8CFF"/>
 </svg>

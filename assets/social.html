@@ -3,60 +3,66 @@
 <head>
 <meta charset="utf-8" />
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
   html, body { margin: 0; padding: 0; }
   .card {
-    width: 1280px; height: 640px; background: #161616;
+    width: 1280px; height: 640px; background: #0B0C10;
     position: relative; overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
   }
   .glow {
     position: absolute; inset: 0;
-    background: radial-gradient(820px 520px at 50% 38%, rgba(86, 129, 181, 0.18), transparent 68%);
+    background: radial-gradient(760px 520px at 50% 36%, rgba(91, 140, 255, 0.16), transparent 66%);
   }
-  .lockup { display: flex; align-items: center; gap: 34px; z-index: 1; }
-  h1 { margin: 0; font-size: 124px; font-weight: 700; letter-spacing: -0.035em; color: #edf1f6; }
+  .grid {
+    position: absolute; inset: 0; opacity: 0.45;
+    background-image:
+      linear-gradient(rgba(28, 31, 40, 0.7) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28, 31, 40, 0.7) 1px, transparent 1px);
+    background-size: 52px 52px;
+    -webkit-mask-image: radial-gradient(720px 460px at 50% 50%, #000 0%, transparent 78%);
+            mask-image: radial-gradient(720px 460px at 50% 50%, #000 0%, transparent 78%);
+  }
+  .lockup { display: flex; align-items: center; gap: 32px; z-index: 1; }
+  h1 { margin: 0; font-size: 128px; font-weight: 700; letter-spacing: -0.05em; color: #E7ECF3; line-height: 1; }
   .tagline {
-    margin: 26px 0 0; z-index: 1;
-    font: 500 30px/1 ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
-    color: #7fb0dc;
+    margin: 34px 0 0; z-index: 1;
+    font-size: 31px; font-weight: 500; line-height: 1; color: #5B8CFF;
+    display: flex; align-items: center;
   }
-  .sub { margin: 22px 0 0; z-index: 1; font-size: 24px; font-weight: 500; color: #8b94a3; letter-spacing: 0.01em; }
-  .sub b { color: #c3cdd9; font-weight: 600; }
-  .wave {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 96px;
-    display: flex; align-items: flex-end; justify-content: center; gap: 14px;
+  .cursor {
+    display: inline-block; width: 15px; height: 26px; margin-left: 10px;
+    background: #5B8CFF; border-radius: 1px; transform: translateY(2px);
   }
-  .bar { width: 10px; border-radius: 6px 6px 0 0; }
+  .sub { margin: 24px 0 0; z-index: 1; font-size: 23px; font-weight: 400; color: #7A8597; letter-spacing: 0; }
+  .sub b { color: #E7ECF3; font-weight: 500; }
+  .rule {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 56px;
+    display: flex; align-items: center; justify-content: center; gap: 18px;
+    color: #3A4150; font-size: 17px; letter-spacing: 0.04em;
+    border-top: 1px solid #1C1F28;
+  }
+  .rule .dim { color: #3A4150; }
+  .rule .on { color: #3D6BE0; }
 </style>
 </head>
 <body>
 <div class="card">
   <div class="glow"></div>
+  <div class="grid"></div>
   <div class="lockup">
-    <svg width="150" height="150" viewBox="0 0 256 256">
-      <path d="M64 72 L64 184 L162 128 Z" fill="#5681b5" stroke="#5681b5" stroke-width="20" stroke-linejoin="round"/>
-      <path d="M192 96 a44 44 0 0 1 0 64" stroke="#7fb0dc" stroke-width="16" stroke-linecap="round" fill="none"/>
-      <path d="M218 74 a76 76 0 0 1 0 108" stroke="#7fb0dc" stroke-width="16" stroke-linecap="round" fill="none" opacity="0.45"/>
+    <svg width="148" height="148" viewBox="0 0 256 256">
+      <path d="M92 70 L92 162 L168 116 Z" fill="#5B8CFF" stroke="#5B8CFF" stroke-width="18" stroke-linejoin="round"/>
+      <rect x="92" y="186" width="76" height="14" rx="3" fill="#5B8CFF"/>
     </svg>
     <h1>narrado</h1>
   </div>
-  <p class="tagline">press play on your markdown.</p>
-  <p class="sub">on-device text-to-speech for <b>VS Code</b> &amp; <b>Cursor</b> — no cloud, no API keys</p>
-  <div class="wave" id="wave"></div>
-  <script>
-    const wave = document.getElementById("wave");
-    for (let i = 0; i < 44; i++) {
-      const b = document.createElement("div");
-      b.className = "bar";
-      const h = 14 + Math.abs(Math.sin(i * 0.55)) * 62;
-      b.style.height = h.toFixed(0) + "px";
-      b.style.background = i % 2 ? "#7fb0dc" : "#5681b5";
-      const edge = Math.min(i, 43 - i);
-      b.style.opacity = Math.min(0.55, 0.08 + edge * 0.045).toFixed(2);
-      wave.append(b);
-    }
-  </script>
+  <p class="tagline">&#9654; press play on your markdown<span class="cursor"></span></p>
+  <p class="sub">on-device text-to-speech for <b>VS&nbsp;Code</b> &amp; <b>Cursor</b> &mdash; no cloud, no API keys</p>
+  <div class="rule">
+    <span class="dim">~/</span><span class="on">narrado</span><span class="dim">&nbsp;&rsaquo;&nbsp;kokoro-82m</span><span class="dim">&nbsp;&middot;&nbsp;offline</span><span class="dim">&nbsp;&middot;&nbsp;private</span>
+  </div>
 </div>
 </body>
 </html>

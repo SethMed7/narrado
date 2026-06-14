@@ -23,8 +23,10 @@ body {
 #title {
   margin: 0;
   font-size: 1.3em;
-  font-weight: 600;
+  font-weight: 700;
   overflow-wrap: anywhere;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: -0.01em;
 }
 
 #status {
@@ -55,7 +57,7 @@ body {
 }
 
 #controls button:focus-visible {
-  outline: 1px solid var(--vscode-focusBorder);
+  outline: 1px solid #5b8cff;
   outline-offset: 2px;
 }
 
@@ -63,6 +65,13 @@ body {
   width: 56px;
   height: 56px;
   font-size: 22px;
+  /* narrado brand accent — fixed electric blue, recognizable across themes */
+  background: #5b8cff;
+  color: #0b0c10;
+}
+
+#play:hover {
+  background: #6e9bff;
 }
 
 #stop {
@@ -100,7 +109,7 @@ body {
 }
 
 #options select:focus-visible {
-  outline: 1px solid var(--vscode-focusBorder);
+  outline: 1px solid #5b8cff;
   outline-offset: -1px;
 }
 
@@ -116,7 +125,8 @@ body {
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
-  line-height: 1.45;
+  line-height: 1.5;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   color: var(--vscode-descriptionForeground);
   opacity: 0.55;
 }
@@ -134,4 +144,6 @@ body {
   background: var(--vscode-list-activeSelectionBackground);
   color: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
   opacity: 1;
+  /* narrado brand accent — fixed electric-blue marker on the spoken line */
+  box-shadow: inset 2px 0 0 #5b8cff;
 }
